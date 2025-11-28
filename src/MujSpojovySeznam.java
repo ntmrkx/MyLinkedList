@@ -1,22 +1,23 @@
-import org.w3c.dom.Node;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-public class MujSpojovySeznam {
+public class MujSpojovySeznam implements Iterable<Integer> {
 
     private Node head;
     private Node tail;
     private int size;
 
-    public MujSpojovySeznam(){
+    public MujSpojovySeznam() {
         this.head = null;
         this.tail = null;
         this.size = 0;
     }
 
-    public void addFirst(int value){
+    public void addFirst(int value) {
         Node newNode = new Node(value);
         newNode.next = head;
         head = newNode;
-        if(tail == null){
+        if (tail == null) {
             tail = newNode;
         }
         size++;
@@ -33,101 +34,119 @@ public class MujSpojovySeznam {
         }
         size++;
     }
-    //indexuju od 1.
-    public int getIndex(int index){
-        Node newNode = head;
-        for (int i = 1; i <index ; i++) {
-            newNode=newNode.next;
+
+    public int getIndex(int index) {
+        Node cur = head;
+        for (int i = 1; i < index; i++) {
+            cur = cur.next;
         }
-        return newNode.value;
+        return cur.value;
     }
-    public int indexOf(int value){
-        int num=1;
-        Node newNode = head;
-        while  (newNode!=null){
-            if (contains(value)) {
-                if (newNode.value==value) {
-                    return num;
-                }
-            }
-            newNode=newNode.next;
-            num++;
 
+    public int indexOf(int value) {
+        Node cur = head;
+        int index = 1;
+        while (cur != null) {
+            if (cur.value == value) return index;
+            cur = cur.next;
+            index++;
         }
-
         return -1;
     }
 
-    public int deleteLast(){
-        int num;
-        Node newNode = head;
-        num = tail.value;
-        while(newNode.next.next!=null){
-            newNode=newNode.next;
+    public int deleteLast() {
+        if (head == null) throw new NoSuchElementException();
+
+        if (head == tail) { // jen jeden prvek
+            int val = head.value;
+            head = tail = null;
+            size--;
+            return val;
         }
-        newNode.next = null;
-        tail = newNode;
-        return num;
+
+        Node cur = head;
+        while (cur.next != tail) {
+            cur = cur.next;
+        }
+
+        int val = tail.value;
+        tail = cur;
+        tail.next = null;
+        size--;
+        return val;
     }
 
-    public boolean isEmpty(){
-        if (head==null){
-            return true;
+    public boolean isEmpty() {
+        return head == null;
+    }
+
+    public boolean contains(int value) {
+        Node cur = head;
+        while (cur != null) {
+            if (cur.value == value) return true;
+            cur = cur.next;
         }
         return false;
     }
 
-    public boolean contains(int value){
-        Node newNode = head;
-        if (head.next.value==value){
-            return true;
-        }
-        return false;
+    public int deleteFirst() {
+        if (head == null) throw new NoSuchElementException();
+        int val = head.value;
+        head = head.next;
+        if (head == null) tail = null;
+        size--;
+        return val;
     }
 
-    public int deleteFirst(){
-        int num= head.value;
-        head=head.next;
-        return num;
-    }
-
-
-    public int count(){
+    public int size() {
         return size;
     }
 
-    public String toString(){
+    public String toString() {
         String text = "";
         Node curr = head;
-        while(curr != null){
-            text += curr.value + "--> ";
+        while (curr != null) {
+            text += curr.value + " --> ";
             curr = curr.next;
         }
         return text;
     }
 
-
-
-    public int size(){
-        return size;
+    @Override
+    public Iterator<Integer> iterator() {
+        return new LinkedListIterator(head);
     }
 
-    private class Node{
-        int value;
-        Node next;
+    private class LinkedListIterator implements Iterator<Integer> {
+        private Node current;
 
-        public Node(int value){
-            this.value = value;
-            this.next = null;
+        public LinkedListIterator(Node startNode) {
+            this.current = startNode;
         }
 
         @Override
-        public String toString() {
-            return "Node{" +
-                    "value=" + value +
-                    '}';
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public Integer next() {
+            if (current == null) {
+                throw new NoSuchElementException();
+            }
+            int val = current.value;
+            current = current.next;
+            return val;
         }
     }
 
 
+    private class Node {
+        int value;
+        Node next;
+
+        public Node(int value) {
+            this.value = value;
+        }
+    }
 }
