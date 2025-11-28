@@ -114,39 +114,9 @@ public class MujSpojovySeznam implements Iterable<Integer> {
 
     @Override
     public Iterator<Integer> iterator() {
-        return new LinkedListIterator(head);
-    }
-
-    private class LinkedListIterator implements Iterator<Integer> {
-        private Node current;
-
-        public LinkedListIterator(Node startNode) {
-            this.current = startNode;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return current != null;
-        }
-
-        @Override
-        public Integer next() {
-            if (current == null) {
-                throw new NoSuchElementException();
-            }
-            int val = current.value;
-            current = current.next;
-            return val;
-        }
+        return new Iterator(head);
     }
 
 
-    private class Node {
-        int value;
-        Node next;
-
-        public Node(int value) {
-            this.value = value;
-        }
     }
-}
+
